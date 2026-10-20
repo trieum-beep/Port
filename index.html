@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cut">
+<meta name="theme-color" content="#1d4e89">
+<title>Lisbon & Porto with Kids</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🚋%3C/text%3E%3C/svg%3E">
+<style>
+:root{--blue:#1d4e89;--blue2:#2f6fb3;--sky:#e8f0fa;--sand:#fbf6ee;--terra:#d9643a;--yellow:#f2b632;--ink:#1e2430;--muted:#5d6675;--green:#3f8f6b;--line:#e3e8ef;--bg:#ffffff;--card:#ffffff}
+@media (prefers-color-scheme:dark){:root{--sky:#1b2a3d;--sand:#2a251d;--ink:#e8ecf2;--muted:#9aa4b2;--line:#2c3440;--bg:#12161c;--card:#1a1f27}}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45;padding-bottom:78px}
+a{color:var(--blue2)}
+.tiles{background-color:var(--blue);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.22' stroke-width='2'%3E%3Crect x='1' y='1' width='78' height='78'/%3E%3Ccircle cx='40' cy='40' r='14'/%3E%3Cpath d='M40 4 C52 20 52 26 40 26 C28 26 28 20 40 4Z M40 76 C52 60 52 54 40 54 C28 54 28 60 40 76Z M4 40 C20 28 26 28 26 40 C26 52 20 52 4 40Z M76 40 C60 28 54 28 54 40 C54 52 60 52 76 40Z'/%3E%3C/g%3E%3Ccircle cx='40' cy='40' r='5' fill='%23f2b632' fill-opacity='.8'/%3E%3C/svg%3E")}
+header{color:#fff;padding:22px 16px 18px}
+header .k{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--yellow);font-weight:700}
+header h1{font-size:30px;line-height:1.05;margin:6px 0 4px;font-weight:800}
+header h1 span{color:var(--yellow)}
+header p{font-size:14px;opacity:.95}
+.today{margin:-10px 16px 0;position:relative;background:var(--card);border-radius:16px;box-shadow:0 6px 20px rgba(0,0,0,.12);padding:14px 16px;display:flex;gap:12px;align-items:center;border:1px solid var(--line)}
+.today .big{font-size:34px}
+.today b{display:block;font-size:15px}
+.today small{color:var(--muted);font-size:13px}
+main{max-width:760px;margin:0 auto;padding:16px}
+section.view{display:none}
+section.view.on{display:block}
+h2{font-size:22px;margin:6px 0 12px;font-weight:800}
+h3{font-size:16px;margin:0 0 8px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 12px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:12px}
+.dayhead{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.dbadge{flex:0 0 58px;height:58px;border-radius:14px;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;line-height:1}
+.dbadge small{font-size:10px;letter-spacing:.15em;opacity:.85;font-weight:700}
+.dbadge span{font-size:24px}
+.dayhead h3{margin:0;font-size:17px;line-height:1.2}
+.dayhead .meta{font-size:13px;color:var(--muted);margin-top:3px}
+.tl{border-left:2px dashed var(--line);margin-left:6px;padding-left:16px}
+.it{position:relative;padding-bottom:12px}
+.it:before{content:"";position:absolute;left:-23px;top:3px;width:12px;height:12px;border-radius:50%;background:var(--card);border:2.5px solid var(--dc,var(--terra))}
+.it .t{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--dc,var(--terra))}
+.it p{font-size:14.5px}
+.kid{display:inline-block;margin-top:5px;background:#fff4d6;color:#7a5600;border-radius:8px;padding:3px 8px;font-size:12.5px;font-weight:700}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.btn{display:inline-flex;align-items:center;gap:6px;border-radius:10px;padding:9px 12px;font-size:13px;font-weight:700;text-decoration:none;border:1px solid var(--line);background:var(--sky);color:var(--blue2);cursor:pointer}
+.btn.dark{background:var(--blue);color:#fff;border-color:var(--blue)}
+.wxrow{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.wd{flex:0 0 74px;text-align:center;border-radius:12px;padding:8px 4px;background:var(--sky)}
+.wd.l{background:var(--sand)}
+.wd .d{font-size:11px;font-weight:800;color:var(--muted)}
+.wd .i{font-size:24px}
+.wd b{font-size:17px}
+.wd small{display:block;font-size:11px;color:var(--muted)}
+#map{height:62vh;min-height:360px;border-radius:16px;border:1px solid var(--line);z-index:1}
+.pin{width:26px;height:26px;border-radius:50%;color:#fff;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.home{width:38px;height:38px;border-radius:50%;background:#111827;border:3px solid var(--yellow);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.leaflet-popup-content{font-family:inherit;font-size:14px;margin:12px 14px}
+.leaflet-popup-content b{font-size:15px}
+.plist{list-style:none;margin-top:12px}
+.plist li{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.plist .nb{flex:0 0 24px;height:24px;border-radius:50%;color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.plist a{margin-left:auto;font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap}
+.plist span.nm{cursor:pointer}
+.food{display:grid;gap:10px}
+.fd h3{display:flex;justify-content:space-between;gap:8px;font-size:15.5px}
+.fd h3 small{color:var(--green);font-weight:800}
+.fd .ad{font-size:12.5px;color:var(--muted);margin:2px 0 6px}
+.fd p{font-size:14px}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.tg{font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:7px;background:var(--sky);color:var(--blue2)}
+.tg.w{background:#fde8e0;color:#a2401c}
+.bingo{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.bc{aspect-ratio:1;border:2.5px solid var(--blue2);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--card);cursor:pointer;user-select:none;position:relative;transition:transform .1s}
+.bc:nth-child(odd){border-color:var(--terra)}
+.bc:active{transform:scale(.95)}
+.bc .e{font-size:30px;line-height:1}
+.bc .l{font-size:10.5px;font-weight:700;margin-top:4px;text-align:center;line-height:1.1}
+.bc.done{background:#dff3e8;border-color:var(--green)}
+.bc.done:after{content:"✓";position:absolute;top:2px;right:6px;color:var(--green);font-weight:900;font-size:16px}
+.stars{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.sd{border-radius:12px;background:var(--sand);text-align:center;padding:8px 2px;cursor:pointer;user-select:none}
+.sd .dn{font-size:10.5px;font-weight:800;color:var(--terra)}
+.sd .em{font-size:20px}
+.sd .mi{font-size:10px;line-height:1.15;min-height:34px;font-weight:600}
+.sd .st{font-size:22px;color:#c9cfd9}
+.sd.done .st{color:var(--yellow)}
+.score{font-size:15px;font-weight:800;text-align:center;margin:10px 0}
+.prog{height:10px;background:var(--line);border-radius:6px;overflow:hidden}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--terra),var(--yellow));width:0;transition:width .3s}
+.check{list-style:none}
+.check li{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line);font-size:14.5px;cursor:pointer}
+.check li .b{flex:0 0 22px;height:22px;border-radius:6px;border:2px solid #b9c3d3;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff}
+.check li.done .b{background:var(--green);border-color:var(--green)}
+.check li.done span{text-decoration:line-through;color:var(--muted)}
+.dict{width:100%;border-collapse:collapse}
+.dict td{padding:8px 4px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:middle}
+.dict td.pt{font-weight:800;color:var(--blue2)}
+.dict td.say{font-style:italic;color:var(--terra);font-size:13px}
+.spk{border:none;background:var(--sky);border-radius:8px;padding:6px 8px;cursor:pointer;font-size:15px}
+input.search{width:100%;padding:11px 14px;border-radius:12px;border:1px solid var(--line);font-size:15px;margin-bottom:10px;background:var(--card);color:var(--ink)}
+.fact{font-size:16px;line-height:1.5;min-height:110px}
+.fact b{display:block;font-size:18px;margin-bottom:6px}
+details{border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px;background:var(--card)}
+details summary{font-weight:800;cursor:pointer;font-size:15.5px;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary:after{content:"＋";float:right;color:var(--muted)}
+details[open] summary:after{content:"－"}
+details ul{margin:10px 0 0 18px}
+details li{font-size:14px;margin-bottom:6px}
+.flights{display:grid;gap:10px}
+.fl{display:flex;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.fl .s{background:var(--blue);color:#fff;writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;letter-spacing:.15em;font-weight:800;padding:8px 6px;text-align:center}
+.fl.b .s{background:var(--terra)}
+.fl .m{padding:10px 12px;flex:1}
+.fl .tt{display:flex;justify-content:space-between;align-items:center;font-size:24px;font-weight:800;margin:4px 0}
+.fl .tt small{display:block;font-size:12px;color:var(--blue2)}
+.fl .x{font-size:12.5px;color:var(--muted)}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:1000}
+nav button{flex:1;border:none;background:none;color:var(--muted);font-size:11px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 0}
+nav button .ic{font-size:21px}
+nav button.on{color:var(--terra)}
+.note{background:var(--sand);border-left:4px solid var(--yellow);border-radius:0 12px 12px 0;padding:10px 12px;font-size:14px;margin-bottom:12px}
+footer{text-align:center;font-size:12px;color:var(--muted);padding:20px 16px}
+
+/* BIRTHDAY */
+#bday{position:fixed;inset:0;z-index:5000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(10,25,50,.55);backdrop-filter:blur(3px);animation:fadeIn .4s}
+#bday.hide{display:none}
+#bday .box{position:relative;max-width:420px;width:100%;border-radius:24px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4);text-align:center;color:#fff;animation:pop .6s cubic-bezier(.2,1.4,.4,1)}
+#bday .inner{background:linear-gradient(180deg,rgba(29,78,137,.86),rgba(18,52,96,.95));padding:30px 22px 24px}
+#bday .cake{font-size:72px;line-height:1;animation:bounce 1.6s infinite}
+#bday h2{font-size:34px;line-height:1.05;margin:12px 0 4px;color:#fff}
+#bday h2 span{color:var(--yellow);display:block;font-size:46px}
+#bday .pt{font-style:italic;color:var(--yellow);font-weight:700;margin-bottom:12px;font-size:16px}
+#bday p.msg{font-size:15.5px;line-height:1.5;opacity:.95}
+#bday .sig{margin-top:12px;font-weight:800}
+#bday button.go{margin-top:18px;border:none;background:var(--yellow);color:#1e2430;font-weight:800;font-size:16px;padding:13px 24px;border-radius:14px;cursor:pointer}
+#bday .balloons{position:absolute;top:8px;left:0;right:0;display:flex;justify-content:space-between;padding:0 14px;font-size:30px;pointer-events:none}
+#bday .balloons span{animation:float 3s ease-in-out infinite}
+#bday .balloons span:nth-child(2){animation-delay:.7s}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:6000}
+.bbanner{margin:14px 16px 0;border-radius:14px;padding:11px 14px;background:linear-gradient(90deg,#ffe6a8,#ffd1c1);color:#5a2a14;font-weight:800;font-size:14.5px;display:flex;align-items:center;gap:10px;cursor:pointer;border:none;width:calc(100% - 32px);text-align:left}
+.bbanner small{display:block;font-weight:600;font-size:12px;opacity:.8}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-10px) rotate(4deg)}}
+@media (prefers-reduced-motion:reduce){#bday *,#bday{animation:none!important}}
+</style>
+</head>
+<body>
+<div id="bday" class="hide" role="dialog" aria-label="Birthday greeting">
+  <div class="box tiles"><div class="inner">
+    <div class="balloons"><span>🎈</span><span>🎈</span></div>
+    <div class="cake">🎂</div>
+    <h2>Happy Birthday,<span id="bdName">Mimi!</span></h2>
+    <div class="pt">Feliz aniversário! 🇵🇹</div>
+    <p class="msg" id="bdMsg"></p>
+    <div class="sig" id="bdSig"></div>
+    <button class="go" id="bdGo">Let's go! 🚋</button>
+  </div></div>
+</div>
+<canvas id="confetti"></canvas>
+<header class="tiles">
+  <div class="k">Family trip · 20–27 Oct 2026</div>
+  <h1>Lisbon &amp; <span>Porto</span> with Kids</h1>
+  <p>2 grown-ups · a 3-year-old · a 5-year-old · no stroller</p>
+</header>
+<div class="today" id="today"></div>
+<button class="bbanner" id="bdBanner"><span style="font-size:28px">🎉</span><span>Happy Birthday, Mimi!<small>Tap for your surprise</small></span></button>
+
+<main>
+<!-- PLAN -->
+<section class="view on" id="v-plan">
+  <div class="chips" id="dayChips"></div>
+  <div id="dayView"></div>
+</section>
+
+<!-- MAP -->
+<section class="view" id="v-map">
+  <h2>Map</h2>
+  <div class="chips" id="cityChips"></div>
+  <div class="chips" id="mapChips"></div>
+  <div id="map"></div>
+  <p style="font-size:12.5px;color:var(--muted);margin-top:6px">Lines show the rough order of the day, not the exact streets. Tap a pin for Google Maps.</p>
+  <ul class="plist" id="plist"></ul>
+</section>
+
+<!-- FOOD -->
+<section class="view" id="v-food">
+  <h2>Food ideas</h2>
+  <div class="chips" id="foodChips"></div>
+  <div class="food" id="foodList"></div>
+  <p style="font-size:12.5px;color:var(--muted);margin-top:8px">Opening hours change. Check Google Maps on the day.</p>
+</section>
+
+<!-- KIDS -->
+<section class="view" id="v-kids">
+  <h2>🏆 Explorer Challenge</h2>
+  <div class="card">
+    <h3>🎯 Spotter Bingo: tap what you find!</h3>
+    <div class="bingo" id="bingo"></div>
+  </div>
+  <div class="card">
+    <h3>⭐ Daily missions</h3>
+    <div class="stars" id="stars"></div>
+    <div class="score" id="score"></div>
+    <div class="prog"><i id="progBar"></i></div>
+    <p style="font-size:13px;text-align:center;margin-top:8px;color:var(--muted)">7 stars + a full bingo row = Explorer prize in Porto! 🎁</p>
+  </div>
+  <div class="card">
+    <h3>🎲 Games on the go</h3>
+    <details><summary>👀 I spy… in Portuguese</summary><ul><li>"I spy something <b>azul</b>" (blue). Then <b>amarelo</b> (yellow), <b>vermelho</b> (red), <b>verde</b> (green), <b>branco</b> (white).</li><li>The 5-year-old says the colour, the 3-year-old points.</li></ul></details>
+    <details><summary>🔔 Tram driver</summary><ul><li>One child drives, the others are passengers.</li><li>"Ding ding!" = everybody freezes. "Próxima paragem!" = go!</li></ul></details>
+    <details><summary>🪜 Stair counter</summary><ul><li>Count steps out loud: um, dois, três…</li><li>Guess first. Closest guess wins.</li></ul></details>
+    <details><summary>🐟 Fish memory</summary><ul><li>"In the Oceanário I saw a shark…" Each one adds an animal.</li></ul></details>
+    <details><summary>⚓ Ship explorer</summary><ul><li>The bench is a caravel. Who is captain? "Terra à vista!" (land ahoy) when you see the river.</li></ul></details>
+  </div>
+</section>
+
+<!-- INFO -->
+<section class="view" id="v-info">
+  <h2>Trip info</h2>
+  <div class="flights">
+    <div class="fl"><div class="s">OUTBOUND</div><div class="m"><div class="x">Tue 20 Oct · Luxair LG 3751</div><div class="tt"><div>06:00<small>LUX</small></div><div>✈️</div><div style="text-align:right">07:55<small>LIS · T1</small></div></div><div class="x">Boarding 05:30, gate B10 · 1 bag up to 23 kg</div></div></div>
+    <div class="fl b"><div class="s">RETURN</div><div class="m"><div class="x">Tue 27 Oct · Luxair LG 3762</div><div class="tt"><div>10:00<small>OPO</small></div><div>✈️</div><div style="text-align:right">13:20<small>LUX</small></div></div><div class="x">Online check-in opens Sun 25 Oct, approx. 22:00</div></div></div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <h3>🏠 Stays</h3>
+    <p style="font-size:14px"><b>Lisbon</b> · Airbnb (host Nuno) · <span id="lisAddr"></span><br>Check-in Tue 20, 14:00 · Check-out Sat 24, 11:00</p>
+    <p style="font-size:14px;margin-top:8px"><b>Porto</b> · Airbnb (GuestReady) · address in the Airbnb app<br>Check-in Sat 24, 15:00 · Check-out Tue 27, 11:00</p>
+  </div>
+  <div class="card"><h3>🌦️ Weather</h3><div class="wxrow" id="wx"></div><p style="font-size:12.5px;color:var(--muted);margin-top:6px">Forecast from 19 Oct. Porto: showers likely on Sunday.</p></div>
+  <div class="card"><h3>✅ To-do &amp; packing</h3><ul class="check" id="todo"></ul></div>
+  <h2 style="margin-top:18px">Everyday know-how</h2>
+  <div id="knowhow"></div>
+  <h2 style="margin-top:18px">🗣️ Mini dictionary</h2>
+  <input class="search" id="dsearch" placeholder="Search a word… (e.g. toilet, ice cream)">
+  <div class="card" style="padding:6px 12px"><table class="dict" id="dict"></table></div>
+  <h2 style="margin-top:18px">🤓 Useless knowledge</h2>
+  <div class="card"><div class="fact" id="fact"></div><div class="btnrow"><button class="btn dark" id="nextFact">Next fact →</button></div></div>
+</section>
+</main>
+<footer>Boa viagem! · Map data © OpenStreetMap contributors</footer>
+
+<nav id="nav">
+  <button data-v="plan" class="on"><span class="ic">🗓️</span>Plan</button>
+  <button data-v="map"><span class="ic">🗺️</span>Map</button>
+  <button data-v="food"><span class="ic">🍽️</span>Food</button>
+  <button data-v="kids"><span class="ic">🏆</span>Kids</button>
+  <button data-v="info"><span class="ic">ℹ️</span>Info</button>
+</nav>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+const GEO = {"L": [[1, "Airport Terminal 1", "Aeroporto de Lisboa Terminal 1", 38.77, -9.1281, "d1"], [2, "Confeitaria Nacional", "Confeitaria Nacional, Praça da Figueira, Lisboa", 38.7132, -9.1376, "d1"], [3, "Rossio square", "Praça do Rossio, Lisboa", 38.714, -9.1402, "d1"], [4, "Praça do Comércio", "Praça do Comércio, Lisboa", 38.7077, -9.1365, "d1"], [5, "Time Out Market", "Time Out Market Lisboa", 38.7068, -9.1459, "d1"], [6, "Pastéis de Belém", "Pastéis de Belém, Rua de Belém 84, Lisboa", 38.6975, -9.2032, "d2"], [7, "Jardim de Belém", "Jardim da Praça do Império, Lisboa", 38.6958, -9.2075, "d2"], [8, "Padrão dos Descobrimentos", "Padrão dos Descobrimentos, Lisboa", 38.6936, -9.2057, "d2"], [9, "Torre de Belém", "Torre de Belém, Lisboa", 38.6916, -9.216, "d2"], [10, "Museu de Marinha", "Museu de Marinha, Lisboa", 38.6982, -9.2105, "d2"], [11, "MAAT (walkable roof)", "MAAT Museum of Art Architecture and Technology, Lisboa", 38.6957, -9.195, "d2"], [12, "Oceanário de Lisboa", "Oceanário de Lisboa", 38.7635, -9.0937, "d3"], [13, "Telecabine (cable car)", "Telecabine Lisboa, Parque das Nações", 38.7745, -9.0925, "d3"], [14, "Jardins Garcia de Orta", "Jardins Garcia de Orta, Parque das Nações, Lisboa", 38.7685, -9.094, "d3"], [15, "Jamie's Italian", "Jamie's Italian Lisboa, Praça do Príncipe Real 28", 38.7166, -9.1484, "d3"], [16, "Tram 28 · Martim Moniz", "Elétrico 28 Martim Moniz, Lisboa", 38.717, -9.1366, "d4"], [17, "Miradouro Portas do Sol", "Miradouro das Portas do Sol, Lisboa", 38.7123, -9.1302, "d4"], [18, "Castelo de São Jorge", "Castelo de São Jorge, Lisboa", 38.7139, -9.1334, "d4"], [19, "Ferry · Cais do Sodré", "Terminal Fluvial Cais do Sodré, Lisboa", 38.7056, -9.144, "d4"], [20, "Ferry · Cacilhas", "Terminal Fluvial de Cacilhas, Almada", 38.6873, -9.1483, "d4"], [21, "Ponto Final", "Ponto Final, Rua do Ginjal 72, Almada", 38.6905, -9.1565, "d4"], [22, "Santa Apolónia station", "Estação de Santa Apolónia, Lisboa", 38.7139, -9.1225, "d5"], [23, "Zé da Mouraria", "Zé da Mouraria, Rua João do Outeiro 24, Lisboa", 38.7174, -9.1336, "food"], [24, "Cervejaria Ramiro", "Cervejaria Ramiro, Avenida Almirante Reis 1, Lisboa", 38.7206, -9.1356, "food"], [25, "Manteigaria Chiado", "Manteigaria, Rua do Loreto 2, Lisboa", 38.7109, -9.1446, "food"], [26, "Santini Chiado", "Santini, Rua do Carmo 9, Lisboa", 38.7114, -9.1396, "food"], [27, "O Trevo", "O Trevo, Praça Luís de Camões, Lisboa", 38.71, -9.1428, "food"], [28, "Chapitô à Mesa", "Chapitô à Mesa, Costa do Castelo 7, Lisboa", 38.7119, -9.1345, "food"], [29, "Pizzaria Lisboa", "Pizzaria Lisboa, Rua Nova da Trindade 18, Lisboa", 38.7121, -9.142, "food"], [30, "APF Restaurant", "APF Restaurant, Rua das Trinas 67A, Lisboa", 38.7078, -9.1605, "food"], [31, "Frangasqueira Nacional", "Frangasqueira Nacional, Lisboa", 38.7152, -9.1508, "food"], [32, "A Ginjinha", "A Ginjinha Espinheira, Largo de São Domingos, Lisboa", 38.7149, -9.1386, "food"]], "P": [[1, "Porto-Campanhã station", "Estação de Porto-Campanhã", 41.1489, -8.5854, "d5"], [2, "São Bento station", "Estação de São Bento, Porto", 41.1456, -8.6106, "d5"], [3, "Cais da Ribeira", "Cais da Ribeira, Porto", 41.1405, -8.6125, "d5"], [4, "Funicular dos Guindais", "Funicular dos Guindais, Porto", 41.1416, -8.6076, "d5"], [5, "World of Discoveries", "World of Discoveries, Porto", 41.1428, -8.6195, "d6"], [6, "Time Out Market Porto", "Time Out Market Porto, Estação de São Bento", 41.1449, -8.6119, "d6"], [7, "Majestic Café", "Majestic Café, Rua de Santa Catarina 112, Porto", 41.1472, -8.6063, "d6"], [8, "Jardins do Palácio de Cristal", "Jardins do Palácio de Cristal, Porto", 41.1477, -8.6255, "d6"], [9, "Mercado do Bolhão", "Mercado do Bolhão, Porto", 41.1496, -8.6054, "d7"], [10, "Ponte Dom Luís I", "Ponte Dom Luís I, Porto", 41.1397, -8.6094, "d7"], [11, "Teleférico de Gaia", "Teleférico de Gaia", 41.1376, -8.6112, "d7"], [12, "Port wine cellars, Gaia", "Caves de Vinho do Porto, Vila Nova de Gaia", 41.1368, -8.616, "d7"], [13, "Tram 1 · Infante", "Elétrico Linha 1 Infante, Porto", 41.1411, -8.6158, "d7"], [14, "Foz · Farol de Felgueiras", "Farol de Felgueiras, Foz do Douro, Porto", 41.1488, -8.677, "d7"], [15, "Praia da Luz", "Praia da Luz, Avenida do Brasil, Porto", 41.1545, -8.6788, "d7"], [16, "Matosinhos grill street", "Rua Heróis de França, Matosinhos", 41.1838, -8.693, "d7"], [17, "Porto Airport (OPO)", "Aeroporto Francisco Sá Carneiro", 41.2421, -8.6781, "d8"], [18, "Café Santiago", "Café Santiago, Rua de Passos Manuel 226, Porto", 41.1467, -8.605, "food"], [19, "Brasão Cervejaria", "Brasão Cervejaria Aliados, Rua Ramalho Ortigão 28, Porto", 41.148, -8.6118, "food"], [20, "Cantinho do Avillez", "Cantinho do Avillez, Rua Mouzinho da Silveira 166, Porto", 41.1428, -8.6142, "food"], [21, "Casa Guedes", "Casa Guedes, Praça dos Poveiros, Porto", 41.1457, -8.604, "food"], [22, "Manteigaria Porto", "Manteigaria, Rua de Alexandre Braga, Porto", 41.1487, -8.6073, "food"], [23, "Leitaria da Quinta do Paço", "Leitaria da Quinta do Paço, Praça Guilherme Gomes Fernandes, Porto", 41.1474, -8.6156, "food"]], "LR": [["d1", [[38.77, -9.1281], [38.755, -9.13], [38.735, -9.134], [38.72, -9.1356], [38.7157, -9.1352]], true], ["d1", [[38.7157, -9.1352], [38.7132, -9.1376], [38.714, -9.1402], [38.7105, -9.1378], [38.7077, -9.1365], [38.7066, -9.142], [38.7068, -9.1459]], false], ["d2", [[38.7132, -9.1376], [38.7077, -9.1365], [38.706, -9.145], [38.7045, -9.16], [38.7025, -9.175], [38.6995, -9.188], [38.6975, -9.2032], [38.6936, -9.2057], [38.6916, -9.216]], false], ["d3", [[38.7157, -9.1352], [38.737, -9.134], [38.752, -9.118], [38.7678, -9.099], [38.7635, -9.0937]], true], ["d3", [[38.7157, -9.1352], [38.7166, -9.1484]], true], ["d4", [[38.717, -9.1366], [38.7185, -9.133], [38.7168, -9.13], [38.7123, -9.1302], [38.7139, -9.1334]], false], ["d4", [[38.7139, -9.1334], [38.71, -9.137], [38.7056, -9.144]], false], ["d4", [[38.7056, -9.144], [38.6873, -9.1483]], true], ["d4", [[38.6873, -9.1483], [38.6898, -9.1525], [38.6905, -9.1565]], false], ["d5", [[38.7157, -9.1352], [38.7139, -9.1225]], true]], "PR": [["d5", [[41.1489, -8.5854], [41.1475, -8.596], [41.1462, -8.605], [41.1456, -8.6106]], true], ["d5", [[41.1462, -8.6072], [41.1456, -8.6106], [41.143, -8.612], [41.1405, -8.6125], [41.1416, -8.6076]], false], ["d6", [[41.1462, -8.6072], [41.1449, -8.6119], [41.1428, -8.6195]], false], ["d6", [[41.1428, -8.6195], [41.1455, -8.623], [41.1477, -8.6255]], false], ["d7", [[41.1462, -8.6072], [41.1496, -8.6054], [41.144, -8.6085], [41.1397, -8.6094], [41.1376, -8.6112], [41.1368, -8.616]], false], ["d7", [[41.1411, -8.6158], [41.1438, -8.6235], [41.146, -8.631], [41.1488, -8.642], [41.1492, -8.655], [41.1478, -8.668], [41.1488, -8.677], [41.1545, -8.6788], [41.165, -8.6875], [41.1838, -8.693]], false], ["d8", [[41.1462, -8.6072], [41.16, -8.62], [41.18, -8.645], [41.2, -8.66]], true]]};
+const LIS_ADDR = "Rua do Capelão 15, 1100-113 Lisboa";
+const HOME = {L:[38.7157,-9.1352], P:[41.1462,-8.6072]};
+const COL = {d1:'#d9643a',d2:'#d99a12',d3:'#3f8f6b',d4:'#2f6fb3',d5:'#7b4fa0',d6:'#3f8f6b',d7:'#2f6fb3',d8:'#d9643a',food:'#6b7280'};
+const gs = q => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
+const gd = (o,d,m) => "https://www.google.com/maps/dir/?api=1&origin=" + encodeURIComponent(o) + "&destination=" + encodeURIComponent(d) + "&travelmode=" + m;
+const store = {get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+document.getElementById('lisAddr').innerHTML = `<a href="${gs(LIS_ADDR)}" target="_blank">${LIS_ADDR}</a>`;
+
+const DAYS = [
+ {n:1,date:'2026-10-20',dow:'Tue',city:'L',key:'d1',title:'Landing at 7:55 & easing into the Baixa',wx:['⛅',20,14,'dry'],motto:'You\'ve all been up since the middle of the night. Keep it short. The nap is part of the plan.',
+  items:[['07:55','Land at Terminal 1. Taxi, Uber or Bolt to Rua do Capelão (approx. 20 min). Drop bags (ask Nuno, or luggage storage).'],
+  ['09:30','Breakfast at <b>Confeitaria Nacional</b> (Praça da Figueira): galão, rolls, first pastel de nata.'],
+  ['10:30','Stroll via <b>Rossio</b> and <b>Rua Augusta</b> to the <b>Praça do Comércio</b>. Room to run!','🐦 Count the seagulls'],
+  ['12:30','Lunch at the <b>Time Out Market</b> or in the Baixa. Taxi or metro back up.'],
+  ['14:00','Check-in. <b>Long nap</b> for everyone.'],
+  ['Evening','Slow wander through Mouraria, early dinner nearby.','🍦 First gelado']],
+  links:[['🚕 Airport → Airbnb',gd('Aeroporto de Lisboa Terminal 1',LIS_ADDR,'driving')]]},
+ {n:2,date:'2026-10-21',dow:'Wed',city:'L',key:'d2',title:'Belém: towers, ships & the best pastéis',wx:['🌤️',22,14,'dry'],motto:'Flat, green and by the water. Perfect without a stroller.',
+  items:[['Morning','Tram <b>15E</b> from Praça da Figueira to Belém (approx. 30 min). First stop: <b>Pastéis de Belém</b>. Come early.','🥧 Who can eat two?'],
+  ['Midday','Picnic in the <b>Jardim de Belém</b>, then along the river to the <b>Padrão dos Descobrimentos</b> with its giant world map.'],
+  ['Afternoon','<b>Torre de Belém</b> from outside. Energy left? <b>Museu de Marinha</b> or the roof of the <b>MAAT</b>.']],
+  links:[['🚋 Airbnb → Pastéis de Belém',gd(LIS_ADDR,'Pastéis de Belém, Lisboa','transit')]]},
+ {n:3,date:'2026-10-22',dow:'Thu',city:'L',key:'d3',title:'Oceanário & dinner at Jamie\'s',wx:['☀️',20,13,'dry'],motto:'The big highlight for the little ones.',
+  items:[['Morning','Metro to <b>Oriente</b>. Be at the <b>Oceanário</b> at opening (tickets online). Sharks, penguins, sea otters.','🦦 Find the sea otters!'],
+  ['Midday','Lunch by the water, then the <b>Telecabine</b> cable car along the river.'],
+  ['Afternoon','Playgrounds in the <b>Jardins Garcia de Orta</b>. Metro home, rest.'],
+  ['18:00','Taxi to <b>Príncipe Real</b>. Playground under the giant cedar, then dinner at <b>Jamie\'s Italian</b>. Reserve!','🍝 Pasta at Jamie Oliver\'s']],
+  links:[['🚇 Airbnb → Oceanário',gd(LIS_ADDR,'Oceanário de Lisboa','transit')],['🚕 Airbnb → Jamie\'s Italian',gd(LIS_ADDR,"Jamie's Italian Lisboa, Praça do Príncipe Real",'driving')]]},
+ {n:4,date:'2026-10-23',dow:'Fri',city:'L',key:'d4',title:'Tram 28, castle & ferry to Ponto Final',wx:['🌤️',22,15,'dry'],motto:'Ride up, stroll down, then cross the river for lunch on the water.',
+  items:[['09:00','<b>Tram 28</b> from Martim Moniz (2 min from your door) up to <b>Portas do Sol</b>, short walk to the <b>Castelo de São Jorge</b>.','🦚 Count the peacocks'],
+  ['11:30','Down to <b>Cais do Sodré</b>, ferry to <b>Cacilhas</b> (approx. 10 min).','⛴️ Wave at the red bridge'],
+  ['12:30','15 min walk along Rua do Ginjal to <b>Ponto Final</b>. Reserve by email. No railing at the edge: kids on the land side!'],
+  ['Afternoon','Ferry back, nap. Last evening: pack, dinner in Mouraria.']],
+  links:[['⛴️ Cais do Sodré → Ponto Final',gd('Terminal Fluvial Cais do Sodré, Lisboa','Ponto Final, Rua do Ginjal 72, Almada','transit')]]},
+ {n:5,date:'2026-10-24',dow:'Sat',city:'P',key:'d5',title:'Train to Porto & the Douro',wx:['⛅',19,10,'30 %'],motto:'Check-out 11:00, check-in 15:00. The train fits perfectly.',
+  items:[['11:00','Check-out, taxi to <b>Santa Apolónia</b> (approx. 10 min).'],
+  ['~11:30','<b>Alfa Pendular</b> to Porto-Campanhã, just under 3 hrs. Snacks and games!','🚆 Window bingo: cow, bridge, sea'],
+  ['~14:30','Free local train to <b>São Bento</b> (4 min). Look at the tiled hall.'],
+  ['15:00','Check-in. Down to the <b>Ribeira</b>, back up with the <b>Funicular dos Guindais</b>. Optional: Six Bridges boat tour.']],
+  links:[['🚕 Airbnb → Santa Apolónia',gd(LIS_ADDR,'Estação de Santa Apolónia, Lisboa','driving')],['🚆 Campanhã → São Bento',gd('Estação de Porto-Campanhã','Estação de São Bento, Porto','transit')]]},
+ {n:6,date:'2026-10-25',dow:'Sun',city:'P',key:'d6',title:'Rainy-day plan: explorers & a cosy lunch',wx:['🌦️',20,14,'60 %'],motto:'Clocks go back 1 hr overnight. Kids will be up early.',
+  items:[['Morning','<b>World of Discoveries</b>: indoor boat ride through the age of explorers. Alt.: SEA LIFE Porto.','⛵ Sail like Vasco da Gama'],
+  ['Midday','<b>Time Out Market Porto</b> in São Bento station. Francesinha at Casa Inês.'],
+  ['Afternoon','If dry: <b>Jardins do Palácio de Cristal</b> with peacocks. If wet: nap and hot chocolate.'],
+  ['22:00','Online check-in for the flight home opens.']],
+  links:[['🚶 Ribeira → World of Discoveries',gd('Cais da Ribeira, Porto','World of Discoveries, Porto','walking')]]},
+ {n:7,date:'2026-10-26',dow:'Mon',city:'P',key:'d7',title:'Bolhão, cable car, port wine & the sea',wx:['🌤️',20,12,'20 %'],motto:'A bit of beach to finish.',
+  items:[['Morning','Early stop at the <b>Mercado do Bolhão</b>. Then over the <b>Ponte Dom Luís I</b> to Gaia, <b>Teleférico</b> ride, port wine cellar.'],
+  ['Midday','Historic <b>tram 1</b> along the river to <b>Foz do Douro</b>.','🚋 Vintage tram!'],
+  ['Afternoon','Promenade, lighthouse, sand. Grilled fish in <b>Matosinhos</b> at sunset.']],
+  links:[['🚶 Bolhão → Teleférico de Gaia',gd('Mercado do Bolhão, Porto','Teleférico de Gaia','walking')],['🚋 Infante → Foz',gd('Elétrico Linha 1 Infante, Porto','Farol de Felgueiras, Porto','transit')]]},
+ {n:8,date:'2026-10-27',dow:'Tue',city:'P',key:'d8',title:'Fly home',wx:['🌤️',20,12,'20 %'],motto:'Adeus, Portugal!',
+  items:[['07:00','Breakfast, last packing.'],['07:45','Taxi/Bolt to the airport (approx. 25 min) or Metro line E.'],['08:15','Bag drop at OPO.'],['10:00','Take-off LG 3762. 13:20 in Luxembourg.']],
+  links:[['✈️ São Bento → Airport',gd('Estação de São Bento, Porto','Aeroporto Francisco Sá Carneiro','transit')]]},
+];
+
+/* TODAY */
+(function(){
+  const now=new Date(); const iso=now.toISOString().slice(0,10);
+  const start=new Date('2026-10-20T00:00:00'); const diff=Math.floor((now-start)/864e5);
+  let html, idx=DAYS.findIndex(d=>d.date===iso);
+  if(idx>=0){const d=DAYS[idx];html=`<div class="big">${d.wx[0]}</div><div><b>Today: Day ${d.n} · ${d.title}</b><small>${d.wx[1]}° / ${d.wx[2]}° · ${d.city==='L'?'Lisbon':'Porto'}</small></div>`;}
+  else if(diff<0){html=`<div class="big">✈️</div><div><b>${-diff} day${-diff>1?'s':''} to go!</b><small>Lisbon on Tue 20 Oct, 07:55</small></div>`;idx=0;}
+  else {html=`<div class="big">🏡</div><div><b>Welcome home!</b><small>Obrigado, Portugal.</small></div>`;idx=0;}
+  document.getElementById('today').innerHTML=html; window.START_DAY=idx;
+})();
+
+/* PLAN */
+function renderDay(i){
+  const d=DAYS[i];
+  document.querySelectorAll('#dayChips .chip').forEach((c,j)=>c.classList.toggle('on',j===i));
+  document.getElementById('dayView').innerHTML=`<div class="card" style="--dc:${COL[d.key]}">
+   <div class="dayhead"><div class="dbadge" style="background:${COL[d.key]}"><small>DAY</small><span>${d.n}</span></div>
+   <div><h3>${d.title}</h3><div class="meta">${d.dow} ${d.date.slice(8)} Oct · ${d.city==='L'?'Lisbon':'Porto'} · ${d.wx[0]} ${d.wx[1]}°/${d.wx[2]}° · rain ${d.wx[3]}</div></div></div>
+   <p style="font-size:13.5px;color:var(--muted);font-style:italic;margin-bottom:10px">${d.motto}</p>
+   <div class="tl">${d.items.map(it=>`<div class="it"><div class="t">${it[0]}</div><p>${it[1]}</p>${it[2]?`<span class="kid">${it[2]}</span>`:''}</div>`).join('')}</div>
+   <div class="btnrow">${d.links.map(l=>`<a class="btn" href="${l[1]}" target="_blank" rel="noopener">${l[0]}</a>`).join('')}
+   <button class="btn dark" onclick="showDayOnMap(${i})">🗺️ Show on map</button></div></div>`;
+}
+document.getElementById('dayChips').innerHTML=DAYS.map((d,i)=>`<button class="chip" onclick="renderDay(${i})"><i style="background:${COL[d.key]}"></i>${d.dow} ${d.date.slice(8)}</button>`).join('');
+renderDay(window.START_DAY);
+
+/* NAV */
+function show(v){document.querySelectorAll('.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));window.scrollTo(0,0);if(v==='map'){initMap();setTimeout(()=>map.invalidateSize(),60)}}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+
+/* MAP */
+let map,layer,city='L',filter='all';
+const FILTERS={L:[['all','All'],['d1','Day 1'],['d2','Day 2'],['d3','Day 3'],['d4','Day 4'],['d5','Day 5'],['food','Food']],P:[['all','All'],['d5','Day 5'],['d6','Day 6'],['d7','Day 7'],['d8','Day 8'],['food','Food']]};
+function initMap(){ if(map) return;
+  map=L.map('map',{zoomControl:true});
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);
+  layer=L.layerGroup().addTo(map); drawMap();
+}
+function chipsMap(){
+  document.getElementById('cityChips').innerHTML=[['L','🇵🇹 Lisbon'],['P','🇵🇹 Porto']].map(([k,t])=>`<button class="chip ${city===k?'on':''}" onclick="city='${k}';filter='all';drawMap()">${t}</button>`).join('');
+  document.getElementById('mapChips').innerHTML=FILTERS[city].map(([k,t])=>`<button class="chip ${filter===k?'on':''}" onclick="filter='${k}';drawMap()">${k!=='all'?`<i style="background:${COL[k]}"></i>`:''}${t}</button>`).join('');
+}
+function drawMap(){
+  chipsMap(); if(!map) return; layer.clearLayers();
+  const pl=GEO[city].filter(p=>filter==='all'||p[5]===filter), rs=GEO[city==='L'?'LR':'PR'].filter(r=>filter==='all'||r[0]===filter);
+  rs.forEach(r=>L.polyline(r[1],{color:COL[r[0]],weight:4,opacity:.8,dashArray:r[2]?'8 8':null}).addTo(layer));
+  const pts=[];
+  pl.forEach(p=>{ if(city==='P'&&p[0]===17&&filter==='all') return;
+    const m=L.marker([p[3],p[4]],{icon:L.divIcon({className:'',html:`<div class="pin" style="background:${COL[p[5]]}">${p[0]}</div>`,iconSize:[26,26],iconAnchor:[13,13]})})
+     .bindPopup(`<b>${p[1]}</b><div class="btnrow"><a class="btn dark" href="${gs(p[2])}" target="_blank" rel="noopener">Open in Google Maps</a><a class="btn" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(p[2])}" target="_blank" rel="noopener">Directions</a></div>`).addTo(layer);
+    p.m=m; pts.push([p[3],p[4]]); });
+  const h=HOME[city];
+  if(city==='P') L.circle(h,{radius:250,color:'#111827',weight:1.5,dashArray:'5 5',fillOpacity:.07}).addTo(layer);
+  L.marker(h,{icon:L.divIcon({className:'',html:'<div class="home">🏠</div>',iconSize:[38,38],iconAnchor:[19,19]}),zIndexOffset:1000})
+   .bindPopup(city==='L'?`<b>Your Airbnb</b><br>${LIS_ADDR}<div class="btnrow"><a class="btn dark" href="${gs(LIS_ADDR)}" target="_blank">Open in Google Maps</a><a class="btn" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(LIS_ADDR)}" target="_blank">Take me home</a></div>`:'<b>Your Airbnb (approx. area)</b><br>Exact address in the Airbnb app.').addTo(layer);
+  pts.push(h); map.fitBounds(pts,{padding:[30,30],maxZoom:15});
+  document.getElementById('plist').innerHTML=`<li><span class="nb" style="background:#111827">🏠</span><span class="nm">Your Airbnb${city==='P'?' (approx.)':''}</span>${city==='L'?`<a href="${gs(LIS_ADDR)}" target="_blank">Maps ↗</a>`:''}</li>`+
+   pl.map((p,i)=>`<li><span class="nb" style="background:${COL[p[5]]}">${p[0]}</span><span class="nm" onclick="focusPin(${i})">${p[1]}</span><a href="${gs(p[2])}" target="_blank" rel="noopener">Maps ↗</a></li>`).join('');
+  window._pl=pl;
+}
+function focusPin(i){const p=window._pl[i]; if(p.m){map.setView([p[3],p[4]],16);p.m.openPopup();document.getElementById('map').scrollIntoView({behavior:'smooth'})}}
+function showDayOnMap(i){const d=DAYS[i];city=d.city;filter=d.key;show('map');drawMap();}
+chipsMap();
+
+/* FOOD */
+const FOOD=[
+ ['L','🥐 Confeitaria Nacional','Praça da Figueira 18B · 3 min from Airbnb','Lisbon\'s oldest pastry shop (1829). Perfect first breakfast.',['Day 1 breakfast'],[],'€','Confeitaria Nacional, Praça da Figueira, Lisboa'],
+ ['L','🍲 Zé da Mouraria','Rua João do Outeiro 24 · your neighbourhood','Authentic tasca, lunch only. Giant portions: one dish for two.',['Arrive 12:00'],['Closed Sun','No cards'],'€','Zé da Mouraria, Rua João do Outeiro 24, Lisboa'],
+ ['L','🦐 Cervejaria Ramiro','Av. Almirante Reis 1-H · 10 min walk','Famous seafood beer hall. Finish with a "prego" steak roll like the locals.',['Go early'],['No reservations','Usually closed Mon'],'€€€','Cervejaria Ramiro, Lisboa'],
+ ['L','🥧 Manteigaria','Rua do Loreto 2 · Chiado','Top pastel de nata. A bell rings when a fresh tray comes out.',['Snack stop'],[],'€','Manteigaria, Rua do Loreto 2, Lisboa'],
+ ['L','🍨 Santini','Rua do Carmo 9 · Chiado','Legendary gelato since 1949.',['Explorer prize!'],[],'€','Santini, Rua do Carmo 9, Lisboa'],
+ ['L','🥪 O Trevo','Praça Luís de Camões · Chiado','Counter bar famous for its bifana. Quick and cheap.',['Quick bite'],[],'€','O Trevo, Praça Luís de Camões, Lisboa'],
+ ['L','🎪 Chapitô à Mesa','Costa do Castelo 7','Circus-school restaurant with a terrace and a big view. Plan B for Ponto Final.',['Day 4'],[],'€€','Chapitô à Mesa, Costa do Castelo 7, Lisboa'],
+ ['L','🍕 Pizzaria Lisboa','Rua Nova da Trindade 18 · Chiado','José Avillez\'s pizzeria. Relaxed with kids.',['Kid favourite'],['Book ahead'],'€€','Pizzaria Lisboa, Rua Nova da Trindade 18, Lisboa'],
+ ['L','🧸 APF Restaurant','Rua das Trinas 67A · Madragoa','Family restaurant with a 100 m² play area and babysitter.',['Kid heaven'],[],'€€','APF Restaurant, Rua das Trinas 67A, Lisboa'],
+ ['L','🍗 Frangasqueira Nacional','Príncipe Real','Takeaway piri-piri chicken. Picnic in the Príncipe Real garden.',['Picnic idea'],[],'€','Frangasqueira Nacional, Lisboa'],
+ ['L','🍝 Jamie\'s Italian','Praça do Príncipe Real 28','Jamie Oliver\'s restaurant. Planned for Thu evening.',['Day 3 dinner'],['Reserve'],'€€','Jamie\'s Italian Lisboa, Praça do Príncipe Real 28'],
+ ['L','🌊 Ponto Final','Rua do Ginjal 72, Almada','Tables at the water\'s edge with a view of Lisbon. Planned for Fri lunch.',['Day 4 lunch'],['Closed Tue','Reserve by email'],'€€','Ponto Final, Rua do Ginjal 72, Almada'],
+ ['P','🏛️ Time Out Market Porto','Inside São Bento station','Food hall, open every day. Francesinha at Casa Inês.',['Day 6 lunch','Open Sun'],[],'€€','Time Out Market Porto'],
+ ['P','🥪 Café Santiago','Rua de Passos Manuel 226','The most famous francesinha in town.',['Sat or Mon'],['Closed Sun','No reservations'],'€€','Café Santiago, Rua de Passos Manuel 226, Porto'],
+ ['P','🍺 Brasão Cervejaria','Rua Ramalho Ortigão 28','Cosy beer hall, great francesinha.',['Open Sun'],[],'€€','Brasão Cervejaria Aliados, Porto'],
+ ['P','🍽️ Cantinho do Avillez','Rua Mouzinho da Silveira 166','Modern Portuguese, kid-friendly.',['Open Mon'],['Book ahead'],'€€€','Cantinho do Avillez, Porto'],
+ ['P','☕ Majestic Café','Rua de Santa Catarina 112','The most beautiful café in Porto (1921). One hot chocolate!',['Rainy-day treat'],['Queue'],'€€€','Majestic Café, Porto'],
+ ['P','🥖 Casa Guedes','Praça dos Poveiros','Cult roast pork sandwich with Serra cheese.',['Quick bite'],[],'€','Casa Guedes, Praça dos Poveiros, Porto'],
+ ['P','🥐 Manteigaria Porto','By Mercado do Bolhão','The same great natas as in Lisbon.',['Day 7 breakfast'],[],'€','Manteigaria, Rua de Alexandre Braga, Porto'],
+ ['P','🐟 Matosinhos grill street','Rua Heróis de França','Fish grills on the pavement. Kids can watch.',['Day 7 dinner'],['Check Mon hours'],'€€','Rua Heróis de França, Matosinhos'],
+ ['P','🍫 Leitaria da Quinta do Paço','Praça Guilherme Gomes Fernandes','Famous cream-filled éclairs.',['Snack stop'],[],'€','Leitaria da Quinta do Paço, Porto'],
+ ['P','🌊 Praia da Luz','Avenida do Brasil · Foz','Beach café on the rocks. Kids dig in the sand below.',['Day 7 afternoon'],[],'€€','Praia da Luz, Porto'],
+];
+let fcity='L';
+function renderFood(){
+  document.getElementById('foodChips').innerHTML=[['L','Lisbon'],['P','Porto']].map(([k,t])=>`<button class="chip ${fcity===k?'on':''}" onclick="fcity='${k}';renderFood()">${t}</button>`).join('');
+  document.getElementById('foodList').innerHTML=FOOD.filter(f=>f[0]===fcity).map(f=>`<div class="card fd" style="margin:0"><h3>${f[1]}<small>${f[6]}</small></h3><div class="ad">📍 ${f[2]}</div><p>${f[3]}</p><div class="tags">${f[4].map(t=>`<span class="tg">${t}</span>`).join('')}${f[5].map(t=>`<span class="tg w">${t}</span>`).join('')}</div><div class="btnrow"><a class="btn" href="${gs(f[7])}" target="_blank" rel="noopener">📍 Google Maps</a></div></div>`).join('');
+}
+renderFood();
+
+/* KIDS */
+const BINGO=[['🦚','Peacock'],['🚋','Yellow tram'],['🔷','Blue tile wall'],['🐦','Seagull on a roof'],['🦈','Shark'],['🐧','Penguin'],['🌉','Red bridge'],['🚡','Cable car'],['🏰','Castle cannon'],['🥧','Pastel de nata'],['🚆','Fast train'],['🗼','Lighthouse'],['⛵','Big ship'],['🦦','Sea otter'],['🦆','Duck in a pond'],['🌊','A big wave']];
+const MISS=[['TUE','✈️','Say "Olá"'],['WED','⛵','Count 5 boats'],['THU','🦈','Find the biggest fish'],['FRI','🦚','Peacock with open tail'],['SAT','🚆','Spot a cow from the train'],['SUN','🧭','Steer the explorer boat'],['MON','🌊','Touch the Atlantic']];
+let bingo=store.get('bingo',[]), stars=store.get('stars',[]);
+function renderKids(){
+  document.getElementById('bingo').innerHTML=BINGO.map((b,i)=>`<div class="bc ${bingo.includes(i)?'done':''}" onclick="tog('bingo',${i})"><div class="e">${b[0]}</div><div class="l">${b[1]}</div></div>`).join('');
+  document.getElementById('stars').innerHTML=MISS.map((m,i)=>`<div class="sd ${stars.includes(i)?'done':''}" onclick="tog('stars',${i})"><div class="dn">${m[0]}</div><div class="em">${m[1]}</div><div class="mi">${m[2]}</div><div class="st">★</div></div>`).join('');
+  const rows=[0,1,2,3].some(r=>[0,1,2,3].every(c=>bingo.includes(r*4+c)))||[0,1,2,3].some(c=>[0,1,2,3].every(r=>bingo.includes(r*4+c)));
+  document.getElementById('score').textContent=`⭐ ${stars.length}/7 stars · 🎯 ${bingo.length}/16 found${rows?' · BINGO! 🎉':''}`;
+  document.getElementById('progBar').style.width=Math.round((stars.length/7*0.6+bingo.length/16*0.4)*100)+'%';
+}
+function tog(k,i){const a=k==='bingo'?bingo:stars;const j=a.indexOf(i);j>=0?a.splice(j,1):a.push(i);store.set(k,a);renderKids();if(navigator.vibrate)navigator.vibrate(20);}
+renderKids();
+
+/* TODO */
+const TODO=['Ask Nuno: bag drop before 14:00?','Reserve Jamie\'s Italian (Thu ~18:30)','Email Ponto Final (Fri lunch)','Book Oceanário & castle tickets online','Book the train on cp.pt (Sat ~11:30)','Online check-in return flight (Sun 22:00)','Child carrier packed','Rain jackets & beanies for Porto','Sunscreen & sun hats','Spare clothes in the daypack','Power bank & snacks'];
+let todo=store.get('todo',[]);
+function renderTodo(){document.getElementById('todo').innerHTML=TODO.map((t,i)=>`<li class="${todo.includes(i)?'done':''}" onclick="tt(${i})"><span class="b">${todo.includes(i)?'✓':''}</span><span>${t}</span></li>`).join('')}
+function tt(i){const j=todo.indexOf(i);j>=0?todo.splice(j,1):todo.push(i);store.set('todo',todo);renderTodo()}
+renderTodo();
+
+/* WEATHER */
+document.getElementById('wx').innerHTML=DAYS.map(d=>`<div class="wd ${d.city==='L'?'l':''}"><div class="d">${d.dow} ${d.date.slice(8)}</div><div class="i">${d.wx[0]}</div><b>${d.wx[1]}°</b><small>${d.wx[2]}° · ${d.wx[3]}</small><small>${d.city==='L'?'Lisbon':'Porto'}</small></div>`).join('');
+
+/* KNOW-HOW */
+const KH=[['💶 Tipping & money',['Restaurants: not expected. Round up or 5–10 % for great service.','Taxi, Uber, Bolt: round up to the next euro.','Tuk-tuk drivers & guides: a few euros if good.','ATMs: use bank machines with the blue MB (Multibanco) logo. Avoid Euronet (high fees).','Keep €20–30 in small change for small cafés.']],
+['☕ Café & pastelaria',['Standing at the counter is cheaper than sitting.','Bica = espresso (Porto: cimbalino). Galão = milky coffee in a glass.','"Um destes, por favor" = one of these, please.','Cafés are your toilet stop: buy something small.']],
+['🍽️ Restaurants',['The bill never comes by itself: "A conta, por favor."','"Meia dose" = half portion. Perfect for kids.','Couvert (bread, olives) costs extra. Send it back if unwanted.','Tap water: "água da torneira".','Many small places close Sunday evening or Monday.']],
+['🚕 Taxi, tram & co.',['Uber/Bolt are usually cheaper than taxis, fixed price in the app.','Most cars have no child seats.','Tram 28: on-board tickets are expensive. Use the Navegante card.','Porto Andante card: tap every time you board.','Lisbon metro: keep your card for the exit gate.']],
+['🔌 Practical',['Plugs as in Germany. EU roaming as at home.','Supermarkets: Pingo Doce, Continente.','Night pharmacy = "farmácia de serviço", posted on every pharmacy door.','Emergency: 112.']],
+['🇵🇹 Mentality',['Kids are loved. Strangers will talk to them. It is meant kindly.','"Com licença" = excuse me (squeezing past).','Calma is the national motto.','Porto = FC Porto. No Benfica shirts there!']]];
+document.getElementById('knowhow').innerHTML=KH.map(k=>`<details><summary>${k[0]}</summary><ul>${k[1].map(x=>`<li>${x}</li>`).join('')}</ul></details>`).join('');
+
+/* DICTIONARY */
+const DICT=[['Olá','oh-LAH','Hello'],['Bom dia','bong DEE-ah','Good morning'],['Boa tarde','BOH-ah TAR-d','Good afternoon'],['Boa noite','BOH-ah NOY-t','Good evening'],['Obrigado / Obrigada','oh-bree-GAH-doo / -dah','Thank you (m / f)'],['Por favor','poor fah-VOR','Please'],['Sim / Não','seeng / nowng','Yes / No'],['Desculpe','desh-KOOLP','Sorry / excuse me'],['Com licença','kom lee-SEN-sah','Excuse me (passing)'],['Tchau','chow','Bye'],['A conta, por favor','ah KON-tah poor fah-VOR','The bill, please'],['Água sem gás','AH-gwah seng gash','Still water'],['Água da torneira','AH-gwah dah tor-NAY-rah','Tap water'],['Sumo de laranja','SOO-moo d\' la-RAN-zha','Orange juice'],['Menu infantil','meh-NOO een-fan-TEEL','Kids\' menu'],['Meia dose','MAY-ah DOH-z','Half portion'],['Gelado','zheh-LAH-doo','Ice cream'],['Galão','gah-LOWNG','Milky coffee'],['Um destes, por favor','oong DESH-tesh','One of these, please'],['Onde fica…?','OHN-d FEE-kah','Where is…?'],['Casa de banho','KAH-zah d\' BAH-nyoo','Toilet'],['Comboio','kom-BOY-oo','Train'],['Elétrico','eh-LEH-tree-koo','Tram'],['Quanto custa?','KWAN-too KOOSH-tah','How much?'],['Fala inglês?','FAH-lah een-GLAYSH','Do you speak English?'],['Parque infantil','PAR-k een-fan-TEEL','Playground'],['Fraldas','FRAHL-dash','Nappies'],['Farmácia','far-MAH-see-ah','Pharmacy'],['Ajuda!','ah-ZHOO-dah','Help!'],['Fixe!','FEESH','Cool!'],['Pavão','pah-VOWNG','Peacock'],['Gaivota','guy-VOH-tah','Seagull'],['Tubarão','too-bah-ROWNG','Shark'],['Pinguim','peen-GWEENG','Penguin'],['Pato','PAH-too','Duck'],['um, dois, três','oong, doysh, traysh','1, 2, 3']];
+const canSpeak='speechSynthesis' in window;
+function speak(t){if(!canSpeak)return;const u=new SpeechSynthesisUtterance(t.split('/')[0]);u.lang='pt-PT';u.rate=.85;speechSynthesis.cancel();speechSynthesis.speak(u)}
+function renderDict(q=''){q=q.toLowerCase();document.getElementById('dict').innerHTML=DICT.filter(d=>!q||d.join(' ').toLowerCase().includes(q)).map(d=>`<tr><td class="pt">${d[0]}</td><td class="say">${d[1]}</td><td>${d[2]}</td><td>${canSpeak?`<button class="spk" onclick="speak('${d[0].replace(/'/g,"\\'")}')" aria-label="Listen">🔊</button>`:''}</td></tr>`).join('')}
+document.getElementById('dsearch').oninput=e=>renderDict(e.target.value); renderDict();
+
+/* FACTS */
+const FACTS=[['Older than Rome?','Lisbon is one of the oldest cities in Western Europe, often said to be older than Rome.'],['The Golden Gate\'s cousin','The red Ponte 25 de Abril was built by the American Bridge Company, the firm behind San Francisco\'s Bay Bridge.'],['12 km of bridge','The Vasco da Gama Bridge is about 12 km long, the longest in the EU.'],['A secret since 1837','Pastéis de Belém still follow the monks\' original recipe. Only a handful of people know it.'],['The 1755 earthquake','An earthquake, tsunami and fires destroyed much of Lisbon. The Baixa was rebuilt with some of the first earthquake-resistant buildings.'],['Porto named Portugal','The Roman settlement "Portus Cale" gave the whole country its name.'],['Tripe eaters','People from Porto are called "Tripeiros". Legend: in 1415 they gave their meat to Henry the Navigator\'s fleet and kept only tripe.'],['Not Harry Potter\'s','J.K. Rowling has said she never visited Livraria Lello.'],['Oldest alliance','Portugal and England have been allies since 1373.'],['Tea time','Catherine of Braganza helped make tea fashionable in England.'],['Cork country','About half of the world\'s cork comes from Portugal.'],['Little French girl','That is what "francesinha" means.'],['Tiles from Arabic','"Azulejo" comes from Arabic "az-zulayj", polished little stone. Not from "azul".'],['Your fado street','Fado legend Maria Severa died in 1846 in Rua do Capelão, your Lisbon street.'],['Seven hills','Lisbon is built on seven hills. Your legs will confirm it.']];
+let fi=Math.floor(Math.random()*FACTS.length);
+function renderFact(){const f=FACTS[fi];document.getElementById('fact').innerHTML=`<b>${f[0]}</b>${f[1]}<div style="font-size:12px;color:var(--muted);margin-top:8px">${fi+1} / ${FACTS.length}</div>`}
+document.getElementById('nextFact').onclick=()=>{fi=(fi+1)%FACTS.length;renderFact()}; renderFact();
+
+/* ===== BIRTHDAY SURPRISE (edit the texts here) ===== */
+const BDAY={name:'Mimi',
+  msg:'Sunshine, pastéis de nata, yellow trams and the Atlantic Ocean: may this trip be as wonderful as you are. Here\'s to a year full of adventures, laughter and family moments.',
+  sig:'With lots of love ❤️'};
+document.getElementById('bdName').textContent=BDAY.name+'!';
+document.getElementById('bdMsg').textContent=BDAY.msg;
+document.getElementById('bdSig').textContent=BDAY.sig;
+const cv=document.getElementById('confetti'),cx=cv.getContext('2d');let parts=[],raf;
+function confetti(){cv.width=innerWidth;cv.height=innerHeight;const cols=['#f2b632','#d9643a','#2f6fb3','#3f8f6b','#ffffff','#e84a8a'];
+ parts=Array.from({length:180},()=>({x:Math.random()*cv.width,y:-20-Math.random()*cv.height*.6,w:6+Math.random()*6,h:8+Math.random()*8,c:cols[Math.random()*cols.length|0],vy:2+Math.random()*3,vx:-1.5+Math.random()*3,r:Math.random()*6,vr:-.2+Math.random()*.4}));
+ cancelAnimationFrame(raf);const t0=performance.now();
+ (function loop(t){cx.clearRect(0,0,cv.width,cv.height);parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.fillStyle=p.c;cx.fillRect(-p.w/2,-p.h/2,p.w,p.h);cx.restore()});
+  if(t-t0<6000)raf=requestAnimationFrame(loop);else cx.clearRect(0,0,cv.width,cv.height)})(t0);}
+function openBday(){document.getElementById('bday').classList.remove('hide');if(!matchMedia('(prefers-reduced-motion: reduce)').matches)confetti();}
+function closeBday(){document.getElementById('bday').classList.add('hide');try{sessionStorage.setItem('bdaySeen','1')}catch(e){}}
+document.getElementById('bdGo').onclick=closeBday;
+document.getElementById('bday').onclick=e=>{if(e.target.id==='bday')closeBday()};
+document.getElementById('bdBanner').onclick=openBday;
+let seen=false;try{seen=sessionStorage.getItem('bdaySeen')==='1'}catch(e){}
+if(!seen) setTimeout(openBday,400);
+</script>
+</body>
+</html>
